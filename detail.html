@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>财报详情</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="detail-page">
+      <div class="detail-content">
+        <section class="detail-header">
+          <div>
+            <p class="eyebrow">Financial Statement Detail</p>
+            <h2 id="detail-title">财报详情</h2>
+          </div>
+          <div class="detail-actions">
+            <a class="secondary-button" href="/" id="back-link">返回工作台</a>
+            <div class="status-pill" id="detail-status">加载中</div>
+          </div>
+        </section>
+
+        <section class="detail-summary" id="detail-summary"></section>
+        <section class="statements" id="detail-statements"></section>
+      </div>
+    </main>
+
+    <template id="detail-statement-template">
+      <article class="statement-card">
+        <div class="statement-heading">
+          <h3></h3>
+          <span></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>中文科目</th>
+                <th>English / XBRL</th>
+                <th>数值</th>
+                <th>单位</th>
+                <th>截止日</th>
+                <th>披露日</th>
+                <th>表单</th>
+                <th>Accession</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+    </template>
+
+    <script src="/detail.js" type="module"></script>
+  </body>
+</html>

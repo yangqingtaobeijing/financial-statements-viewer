@@ -10,6 +10,7 @@ const els = {
 
 const formatNumber = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const formatDecimal = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
+const isGitHubPages = location.hostname.endsWith("github.io");
 
 init();
 
@@ -105,6 +106,9 @@ function setStatus(text, mode) {
 }
 
 async function fetchJson(url) {
+  if (isGitHubPages) {
+    throw new Error("GitHub Pages 只能托管静态页面，不能运行本项目的 SEC 代理后端。请在本地用 npm start 访问完整功能。");
+  }
   const response = await fetch(url);
   const payload = await response.json();
   if (!response.ok) throw new Error(payload.error || `Request failed: ${response.status}`);

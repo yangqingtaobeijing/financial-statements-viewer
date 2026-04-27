@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>美股财报工作台</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">FS</div>
+          <div>
+            <p class="eyebrow">SEC XBRL Viewer</p>
+            <h1>美股财报工作台</h1>
+          </div>
+        </div>
+
+        <form class="controls" id="report-form">
+          <label>
+            <span>公司</span>
+            <select id="company-select"></select>
+          </label>
+
+          <label>
+            <span>输入 ticker</span>
+            <div class="ticker-search">
+              <input id="ticker-input" type="text" placeholder="例如 AMD、NFLX、BRK-B" autocomplete="off" />
+              <button type="button" id="ticker-button">查询</button>
+            </div>
+          </label>
+
+          <label>
+            <span>财年</span>
+            <select id="year-select"></select>
+          </label>
+
+          <fieldset>
+            <legend>期间</legend>
+            <div class="periods" id="periods">
+              <label><input type="radio" name="period" value="FY" checked /><span data-period-label>年度 FY</span><small></small></label>
+              <label><input type="radio" name="period" value="Q1" /><span data-period-label>Q1</span><small></small></label>
+              <label><input type="radio" name="period" value="Q2" /><span data-period-label>Q2</span><small></small></label>
+              <label><input type="radio" name="period" value="Q3" /><span data-period-label>Q3</span><small></small></label>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="primary-button">
+            <span>加载财报</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <div class="source-note">
+          <p>数据源：SEC EDGAR Company Facts API</p>
+          <p>第一版抽取标准 US-GAAP 科目，适合快速初筛。</p>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">Financial Statement</p>
+            <h2 id="report-title">选择公司后查看财报</h2>
+            <p class="period-range" id="period-range">财报覆盖期间：待加载</p>
+          </div>
+          <div class="top-actions">
+            <a class="secondary-button" id="detail-link" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">打开 SEC 原文</a>
+            <div class="status-pill" id="status-pill">待加载</div>
+          </div>
+        </section>
+
+        <section class="analysis-panel" id="analysis-panel">
+          <div>
+            <p class="eyebrow">智能解读</p>
+            <h3>等待加载数据</h3>
+          </div>
+          <p class="muted">选择公司、财年和期间后，会生成收入、利润、现金流和负债结构的快速解读。</p>
+        </section>
+
+        <section class="metrics-strip" id="metrics-strip" aria-live="polite"></section>
+
+        <section class="compare-panel" id="compare-panel">
+          <div class="compare-heading">
+            <div>
+              <p class="eyebrow">Compare</p>
+              <h3>数据对比</h3>
+            </div>
+            <div class="compare-controls">
+              <label>
+                <span>指标</span>
+                <select id="compare-metric">
+                  <option value="revenue">营业收入</option>
+                  <option value="netIncome">净利润</option>
+                  <option value="freeCashFlow">自由现金流</option>
+                  <option value="grossMargin">毛利率</option>
+                  <option value="debtRatio">负债率</option>
+                  <option value="assets">总资产</option>
+                  <option value="liabilities">总负债</option>
+                </select>
+              </label>
+              <label>
+                <span>范围</span>
+                <select id="compare-mode">
+                  <option value="annual">年度 FY</option>
+                  <option value="quarterly">季度</option>
+                </select>
+              </label>
+              <label>
+                <span>期数</span>
+                <select id="compare-limit">
+                  <option value="4">4</option>
+                  <option value="8" selected>8</option>
+                  <option value="12">12</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="chart-wrap" id="compare-chart"></div>
+          <div class="table-wrap">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>期间</th>
+                  <th>数值</th>
+                  <th>覆盖期间</th>
+                  <th>披露日</th>
+                </tr>
+              </thead>
+              <tbody id="compare-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="statements" id="statements"></section>
+      </main>
+    </div>
+
+    <template id="statement-template">
+      <article class="statement-card">
+        <div class="statement-heading">
+          <h3></h3>
+          <span></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>中文科目</th>
+                <th>English / XBRL</th>
+                <th>数值</th>
+                <th>单位</th>
+                <th>截止日</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
